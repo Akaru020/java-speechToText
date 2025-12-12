@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Video to Text</title>
+    
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <h1>Video to Text</h1>
+        <p>Upload a video and get the transcript</p>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main">
+    <div class="main-content">
+        <!-- History Section -->
+        <div class="history-section" id="historySection">
+            <h3 class="history-title">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                    <path d="M12 6v6l4 2" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Processing history
+            </h3>
+            <div class="history-grid" id="historyGrid"></div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Upload Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Video upload</h2>
+                    <div class="panel-header-info" id="processingTime" style="display: none;">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            <path d="M12 6v6l4 2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>~2 sec</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- Upload Area -->
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <p class="upload-title">Drag & drop video here</p>
+                        <p class="upload-subtitle">or click to choose a file</p>
+                        <p class="upload-formats">Supported formats: MP4, AVI, MOV, MKV</p>
+                        <input type="file" id="fileInput"  accept="video/*">
+                    </div>
+
+                    <!-- Video Preview -->
+                    <div class="video-preview" id="videoPreview">
+                        <div class="video-container">
+                            <video id="videoPlayer" controls></video>
+                            <button class="remove-video-btn" id="removeVideoBtn">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="video-info">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <div class="video-info-text">
+                                <p class="video-info-name" id="videoFileName"></p>
+                                <p class="video-info-size" id="videoFileSize"></p>
+                            </div>
+                        </div>
+                        <div class="processing" id="processingIndicator">
+                            <div class="spinner"></div>
+                            <span>Processing video...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Output Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Extracted text</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="text-output">
+                        <!-- Empty State -->
+                        <div class="empty-state" id="emptyState">
+                            <div>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <p>Upload a video to extract text</p>
+                            </div>
+                        </div>
+
+                        <!-- Text Content -->
+                        <div class="text-content" id="textContent">
+                            <!-- Control Panel -->
+                            <div class="control-panel">
+                                <div class="control-left">
+                                    <button class="btn btn-outline" id="editBtn">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span id="editBtnText">Edit</span>
+                                    </button>
+                                    <div class="format-selector">
+                                        <span>Format:</span>
+                                        <select id="formatSelect">
+                                            <option value="txt">TXT</option>
+                                            <option value="json">JSON</option>
+                                            <option value="srt">SRT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="control-right">
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span id="wordCount">0 words</span>
+                                    </div>
+                                    <div>|</div>
+                                    <div>
+                                        <span id="charCount">0 characters</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Textarea -->
+                            <textarea id="extractedText" placeholder="Extracted text will appear here..." readonly></textarea>
+
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-large" id="copyBtn">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span id="copyBtnText">Copy text</span>
+                                </button>
+                                <button class="btn btn-primary btn-large" id="downloadBtn">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span id="downloadBtnText">Download as TXT</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- <Messege> Notification -->
+<div class="message" id="message"></div>
+
+<script>
+    // State
+    let videoFile = null;
+    let extractedText = '';
+    let isEditing = false;
+    let exportFormat = 'txt';
+    let history = [];
+
+    // Elements
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const videoPreview = document.getElementById('videoPreview');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoFileName = document.getElementById('videoFileName');
+    const videoFileSize = document.getElementById('videoFileSize');
+    const processingIndicator = document.getElementById('processingIndicator');
+    const processingTime = document.getElementById('processingTime');
+    const removeVideoBtn = document.getElementById('removeVideoBtn');
+    const emptyState = document.getElementById('emptyState');
+    const textContent = document.getElementById('textContent');
+    const extractedTextarea = document.getElementById('extractedText');
+    const editBtn = document.getElementById('editBtn');
+    const editBtnText = document.getElementById('editBtnText');
+    const formatSelect = document.getElementById('formatSelect');
+    const wordCount = document.getElementById('wordCount');
+    const charCount = document.getElementById('charCount');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyBtnText = document.getElementById('copyBtnText');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadBtnText = document.getElementById('downloadBtnText');
+    const message = document.getElementById('message');
+    const historySection = document.getElementById('historySection');
+    const historyGrid = document.getElementById('historyGrid');
+    var jsonData = null;
+    var textFromVideo = null;
+
+
+    // Show message notification
+    function showMessage(msg) {
+        message.textContent = msg;
+        message.classList.add('show');
+        setTimeout(() => {
+            message.classList.remove('show');
+        }, 3000);
+    }
+
+    // Update text statistics
+    function updateTextStats() {
+        const text = extractedTextarea.value;
+        const words = jsonData.wordCount;
+        const chars = text.length;
+        wordCount.textContent = `${words} words`;
+        charCount.textContent = `${chars} characters`;
+        return { words, chars };
+    }
+
+    // Handle file selection
+    async function handleFileSelect(file) {
+        if (file && file.type.startsWith('video/')) {
+            const videoData = new FormData();
+            videoData.append('video', file);
+
+             // Processing of video elements
+            videoFile = file;
+            const url = URL.createObjectURL(file);
+            videoPlayer.src = url;
+
+            uploadArea.style.display = 'none';
+            videoPreview.classList.add('visible');
+            processingTime.style.display = 'flex';
+            processingIndicator.classList.add('visible');
+            const PushVideoFile = document.querySelector('#fileInput');
+
+            
+            // Fetch request
+            async function fetchData() {
+                //Clear context
+                jsonData = null;
+                videoFileName.textContent = 'Processing...';
+                extractedTextarea.value = '';
+                videoFileSize.textContent = '';
+
+                try{
+                    const jsonRespons = await fetch('/api/process', {
+                        method: 'POST',
+                        body: videoData,
+                    });
+
+                    if(!jsonRespons.ok){
+                        throw new Error("Fetch request failed")
+                    }
+
+                    jsonData = await jsonRespons.json();
+                    console.log(jsonData);
+                    console.log(jsonData.wordCount);
+                    videoFileName.textContent =  jsonData.fileName;
+                    videoFileSize.textContent = `${(jsonData.sizeMb)} MB`;
+
+                }catch(error){
+                    console.error(error);
+                }
+            }
+
+
+            await fetchData();
+
+            setTimeout(() => {
+                extractedTextarea.value = jsonData.extractedText;
+
+                processingIndicator.classList.remove('visible');
+                emptyState.style.display = 'none';
+                textContent.classList.add('visible');
+
+                const stats = updateTextStats();
+
+                // Add to history
+                const historyItem = {
+                    id: Date.now().toString(),
+                    fileName: jsonData.fileName,
+                    timestamp: new Date(),
+                    wordCount: jsonData.wordCount
+                };
+                history.unshift(historyItem);
+                history = history.slice(0, 5);
+                updateHistory();
+
+                showMessage('Text extracted successfully');
+            });
+        }
+
+            
+    }
+            
+    
+
+    // Update history display
+    function updateHistory() {
+        if (history.length > 0) {
+            historySection.classList.add('visible');
+            historyGrid.innerHTML = history.map(item => `
+                    <div class="history-item">
+                        <div class="history-item-header">
+                            <div class="history-item-name">${item.fileName}</div>
+                            <div class="history-item-time">${new Date(item.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                        </div>
+                        <div class="history-item-words">${item.wordCount} words</div>
+                    </div>
+                `).join('');
+        }
+    }
+
+    // Upload area click
+    uploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileSelect(file);
+        }
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragging');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragging');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragging');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            handleFileSelect(file);
+        }
+    });
+
+    // Remove video
+    removeVideoBtn.addEventListener('click', () => {
+        if (videoPlayer.src) {
+            URL.revokeObjectURL(videoPlayer.src);
+        }
+        videoFile = null;
+        videoPlayer.src = '';
+        extractedText = '';
+        extractedTextarea.value = '';
+        isEditing = false;
+
+        uploadArea.style.display = 'block';
+        videoPreview.classList.remove('visible');
+        processingTime.style.display = 'none';
+        emptyState.style.display = 'flex';
+        textContent.classList.remove('visible');
+        extractedTextarea.classList.remove('editing');
+        extractedTextarea.readOnly = true;
+        editBtnText.textContent = 'Редактировать';
+    });
+
+    // Edit button
+    editBtn.addEventListener('click', () => {
+        isEditing = !isEditing;
+        extractedTextarea.readOnly = !isEditing;
+        if (isEditing) {
+            extractedTextarea.classList.add('editing');
+            editBtnText.textContent = 'View mode';
+        } else {
+            extractedTextarea.classList.remove('editing');
+            editBtnText.textContent = 'Edit';
+        }
+    });
+
+    // Format select
+    formatSelect.addEventListener('change', (e) => {
+        exportFormat = e.target.value;
+        downloadBtnText.textContent = `Download as ${exportFormat.toUpperCase()}`;
+    });
+
+    // Text change
+    extractedTextarea.addEventListener('input', () => {
+        extractedText = extractedTextarea.value;
+        updateTextStats();
+    });
+
+    // Copy text
+    async function copyText() {
+        try {
+            await navigator.clipboard.writeText(extractedTextarea.value);
+            copyBtnText.textContent = 'Copied';
+            showMessage('Text copied to clipboard');
+            setTimeout(() => {
+                copyBtnText.textContent = 'Copy text';
+            }, 2000);
+        } catch (err) {
+            showMessage('Failed to copy text');
+        }
+    }
+
+    copyBtn.addEventListener('click', copyText);
+
+    // Download text
+    function downloadText() {
+        let content, mimeType, fileExtension;
+        const text = extractedTextarea.value;
+
+        switch (exportFormat) {
+            case 'json':
+                const stats = updateTextStats();
+                const jsonData = {
+                    fileName: jsonData.fileName || 'unknown',
+                    extractedText: text,
+                    timestamp: new Date().toISOString(),
+                    wordCount: jsonData.wordCount,
+                    characterCount: stats.chars
+                };
+                content = JSON.stringify(jsonData, null, 2);
+                mimeType = 'application/json';
+                fileExtension = 'json';
+                break;
+
+            case 'srt':
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                let srtContent = '';
+                sentences.forEach((sentence, index) => {
+                    const startTime = index * 5;
+                    const endTime = (index + 1) * 5;
+                    const formatTime = (seconds) => {
+                        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+                        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+                        const s = (seconds % 60).toString().padStart(2, '0');
+                        return `${h}:${m}:${s},000`;
+                    };
+                    srtContent += `${index + 1}\n${formatTime(startTime)} --> ${formatTime(endTime)}\n${sentence.trim()}\n\n`;
+                });
+                content = srtContent;
+                mimeType = 'text/plain';
+                fileExtension = 'srt';
+                break;
+
+            default:
+                content = text;
+                mimeType = 'text/plain';
+                fileExtension = 'txt';
+        }
+
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `extracted-text-${Date.now()}.${fileExtension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showMessage(`Text downloaded as ${exportFormat.toUpperCase()}`);
+    }
+
+    downloadBtn.addEventListener('click', downloadText);
+</script>
+</body>
+</html>
